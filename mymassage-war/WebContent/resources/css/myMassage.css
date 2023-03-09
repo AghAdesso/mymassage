@@ -1,0 +1,396 @@
+/* General */
+html,body {
+	color: #333333;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	line-height: 20px;
+	height: 100%;
+	cursor: default;
+}
+
+#content {
+	padding: 0 10px 70px 10px;
+	margin: 50px auto 0 auto;
+	max-width: 1200px;
+	z-index = 1;
+}
+/* Page specifics */
+#page {
+	min-height: 100%;
+}
+/* Footer */
+#footer {
+	position: relative;
+	margin-top: -72px;
+	height: 70px;
+	clear: both;
+	font-size: 1.2em;
+}
+
+#footer p {
+	margin: 0;
+	padding: 5px 0 0 0;
+	text-align: center;
+}
+#footer.ui-widget-header {
+	font-weight: normal
+}
+
+/* Menu */
+
+#menu {
+	margin-left: 75%;
+	margin-top: -3%;
+}
+
+.menubar.ui-widget-content {
+	background: transparent;
+	filter: none; /* For IE */
+	border: none;
+}
+
+.menubar.ui-menu.ui-menubar {
+	box-shadow: none;
+	float: left;
+}
+
+.menubar.ui-helper-clearfix:after {
+	clear: none;
+}
+
+#menu ul.ui-menu-child li {
+	padding: 5px 5px 10px 5px;
+}
+
+#menu ul.ui-menu-child {
+	width: 150px !important;
+}
+
+#menu li {
+	padding: 10px 5px 0 5px;
+}
+
+.ui-menu.ui-widget li>.ui-menuitem-link.ui-state-hover {
+	color: inherit;
+	background-color: transparent;
+	background-image: none;
+	filter: none; /* For IE */
+}
+
+
+/* Login */
+
+#loginForm {
+	background-color: #FFFFFF;
+	border: 1px solid #E5E5E5;
+	border-radius: 5px 5px 5px 5px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	margin: 0 auto;
+	max-width: 350px;
+	padding: 19px 29px 29px;
+}
+#loginForm thead {
+	text-align: left;
+	font-size: 30px;
+	line-height: 40px;
+}
+#loginForm label,#loginForm input {
+	color: #999999;
+	font-size: 16px;
+	height: auto;
+	margin-bottom: 15px;
+	padding: 7px 9px;
+	width: 185px;
+}
+
+#loginForm button.loginButton {
+	float: right;
+}
+
+/* Table */
+
+.filter {
+	font-size: 11px;
+	font-weight: normal;
+	font-style: italic;
+	color: #555555 !important;
+}
+
+/* User */
+
+#userForm .ui-widget-header {
+	background: none;
+	border: none;
+	text-align: right !important;
+	margin-right: -10px;
+}
+
+.userTable thead th {
+	background: #ADADAD;
+	color: white;
+	border-top: 1px solid grey;
+	text-shadow: none;
+	border-radius: 0px;
+}
+
+#addUserBtn {
+	float: right;
+	margin-top: 30px;
+}
+
+.userInfoPanel {
+	border: none;
+}
+
+.userDialog.ui-widget-content .ui-dialog-content {
+	padding: 20px 0 20px 20px;
+}
+
+.userDialog.ui-dialog {
+	max-height: 85% !important;
+	min-width: 450px;
+	width: 450px !important;
+	overflow-y: auto;
+}
+
+.userDialog .ui-panelgrid-cell {
+	padding: 14px 20px !important;
+}
+
+.ui-panelgrid td,.ui-panelgrid tr {
+	border-style: none !important
+}
+
+.userTable tr.ui-state-highlight {
+	background: #B3B3B3;
+}
+
+/* Planning */
+#addDateBtn {
+	float: right;
+	margin-top: 30px;
+}
+
+.planningTable thead th, .parameterTable thead th, .indexTable thead th, .logTable thead th {
+	background: #ADADAD;
+	color: white;
+	border-top: 1px solid grey;
+	text-shadow: none;
+	border-radius: 0px;
+}
+
+#changeDateForm {
+	text-align: right;
+	margin-bottom: 20px;
+}
+
+#changeDateForm input {
+	width: 8%;
+}
+
+#changeDateForm label {
+	margin-right: 30px;
+}
+
+.planningTab {
+	border: none !important;
+}
+
+.planningTab a {
+	color: black !important;
+}
+
+.planningDialog.ui-widget-content .ui-dialog-content {
+	padding: 20px 0 20px 20px !important;
+}
+
+/* Parameters */
+
+.paramDescription {
+	width: 60%;
+}
+
+.paramType {
+	width: 10%;
+}
+
+.parameterDialog.ui-dialog {
+	max-height: 85% !important;
+	min-width: 450px;
+	width: 450px !important;
+	overflow-y: auto;
+}
+
+/* Index */
+.indexTable {
+	text-align: center;
+}
+
+.indexTable a {
+	text-decoration: none;
+}
+
+#infoUserNextMassage {
+	background-color: #228B22;
+	color: white;
+	width: 30%;
+	border-radius: 3px;
+	margin-bottom: 10px;
+	padding: 6px;
+	text-align:center;
+}
+
+.iconRegistration {
+	background: transparent !important;
+	border: none;
+	border-radius: 0px;
+	box-shadow: none;
+	cursor: default;
+}
+
+#cancelRegistrationDiv {
+	margin-top: -45px;
+	margin-left: 32%;
+	margin-bottom: 10px;
+}
+
+.cancelRegistrationButton {
+
+	padding: 5.5px !important;
+	background: #FF4444 !important;
+}
+
+#highlightMassage {
+	background: #FDCA22;
+	font-weight: bold;
+	width: 30%;
+	border-radius: 3px;
+	margin-bottom: 10px;
+	padding: 6px;
+	text-align:center;
+}
+
+#highlightMassage a {
+	color: black;
+}
+
+
+.highlightDates a {
+	background: #66CC00 !important;
+}
+
+.highlightFullDates a {
+	background: #f90000 !important;
+}
+
+#planning {
+	background: white;
+	font-weight: bold;
+	width: 8%;
+	border-radius: 3px;
+	margin-top: -10px;
+	padding: 6px;
+	text-align:center;
+	border: 1px solid grey;
+	float: right;
+}
+
+.printRegistrationDay {
+	background: #0066CC !important;
+	color: white !important;
+	text-shadow: none !important;
+	margin-left: 10px;
+}
+
+#monthPlanning {
+	background: white;
+	font-weight: bold;
+	width: 13%;
+	border-radius: 3px;
+	margin-top: -10px;
+	padding: 6px;
+	text-align:center;
+	border: 1px solid grey;
+	float: right;
+	margin-left: 15px;
+}
+
+.printRegistrationMonth {
+	background: transparent !important;
+	border: none;
+	border-radius: 0px;
+	box-shadow: none;
+	cursor: default;
+}
+
+/* Header */
+#header {
+	padding: 4px 0px;
+	height: 75px;
+	position: relative;
+	font-size: 1.3em;
+}
+
+#header h1 a {
+	text-decoration: none;
+}
+
+#logo {
+	margin: 8px;
+	text-align: left;
+}
+#logout, #login{
+	text-align: right;
+	margin-top: -3%;
+	margin-right: 8px;
+}
+.logoutButton {
+	background: #FF4500 !important;
+	padding: 11px !important;
+	margin-left: 1%;
+} 
+
+.headerLoginButton {
+	padding: 11px !important;
+	margin-left: 1%;
+	background: #06C !important;
+	color: white !important;
+	text-shadow: none !important;
+}
+
+#headerMessages {
+	margin-top: 4.7%;
+}
+
+#appName {
+	margin-left: 18%;
+	margin-top: -2.6%;
+}
+
+/* Log */
+.logCells {
+	text-align: center;
+}
+.logDateHeader {
+	width: 13%;
+}
+.logTypeHeader {
+	width: 9%;
+}
+.logSeverityHeader {
+	width: 6%;
+}
+.logUserHeader {
+	width: 5%;
+}
+.alignCenter {
+	text-align:center !important;
+}
+#logForm .ui-corner-top {
+	background: none;
+	border: none;
+	text-align: right;
+}
+.logTable {
+	margin-bottom: 40px;
+}

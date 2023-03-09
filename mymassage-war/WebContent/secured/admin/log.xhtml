@@ -1,0 +1,73 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<ui:define name="page">
+		<h1 class="leftAlign20">#{label['log.title']}</h1>
+		
+		<h:panelGroup id="logPanelGroup">
+			<h:form id="logForm">
+				
+				<p:dataTable id="logTable" var="log"
+					value="#{logBean.logsList}" widgetVar="logTableWv"
+					styleClass="logTable"
+					emptyMessage="#{label['common.datatable.empty']}"
+					rowKey="#{log.id}" rows="30" paginator="true" 
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="10,20,30,40,50">
+					
+					<!-- Filter field -->
+					<f:facet name="header">
+						<p:outputPanel styleClass="logFilter">
+							<p:outputLabel value="#{label['common.label.filtre']}  " for="globalFilter"/>
+							<p:inputText id="globalFilter" onkeyup="PF('logTableWv').filter()"
+								styleClass="filter" />
+							<p:watermark for="globalFilter" value="#{label['common.filter']}" />
+						</p:outputPanel>
+					</f:facet>
+
+					<p:columnGroup type="header">
+						<p:row>
+							<p:column headerText="#{label['common.date']}"
+								 filterMatchMode="contains" filterBy="#{log.date}" filterStyle="display:none" 
+								 styleClass="logDateHeader"/>											
+							<p:column headerText="#{label['log.header.type']}"
+								  filterMatchMode="contains" filterBy="#{log.type}" filterStyle="display:none" 
+								  styleClass="logTypeHeader"/>
+							<p:column headerText="#{label['log.header.severity']}"
+								 filterMatchMode="contains" filterBy="#{log.severity}" filterStyle="display:none" 
+								 styleClass="logSeverityHeader"/>
+							<p:column headerText="#{label['log.header.content']}"
+								escape="false"  filterMatchMode="contains" filterBy="#{log.content}" filterStyle="display:none" />
+							<p:column headerText="#{label['common.login']}"
+								 filterMatchMode="contains" filterBy="#{log.userLogin}" filterStyle="display:none"
+								 styleClass="logUserHeader" />
+						</p:row>
+					</p:columnGroup>
+					
+					<p:column styleClass="alignCenter">
+						<h:outputText value="#{log.date}" >
+							<f:convertDateTime pattern="dd.MM.yyyy à HH:mm:ss" timeZone="Europe/Berlin"/>
+						</h:outputText>
+					</p:column>
+					<p:column styleClass="alignCenter">
+						<h:outputText value="#{log.type}" />
+					</p:column>
+					<p:column styleClass="alignCenter">
+						<h:outputText value="#{log.severity}" />
+					</p:column>
+					<p:column >					
+						<h:outputText value="#{log.content}"/>
+					</p:column>	
+					<p:column styleClass="alignCenter">					
+						<h:outputText value="#{log.userLogin}"/>
+					</p:column>			
+				</p:dataTable>
+			</h:form>
+		</h:panelGroup>
+	</ui:define>
+</ui:composition>

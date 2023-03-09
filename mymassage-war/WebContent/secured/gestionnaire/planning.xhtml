@@ -1,0 +1,205 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<ui:define name="page">
+		<script>
+		    function highlightDaysPlanning(date) {
+		        var dates = #{massageBean.highlightDateList};
+		        var cssclass = '';
+		        for (var i = 0; i &lt; dates.length; i++) {
+		            if (date.yyyymmdd() == new Date(dates[i]).yyyymmdd()) {
+		               cssclass = 'highlightDates';
+		            }
+		        }
+		        return [true, cssclass, ''];
+		    }
+		</script>
+		<h1 class="leftAlign20">#{label['planning.title']}</h1>
+		
+		<h:panelGroup id="planningPanelGroup">
+			<h:form id="changeDateForm">
+				<h:outputScript library="js" name="local.js"/>
+				<p:outputLabel value="#{label['common.date']} :"
+						for="planningDate" />
+				<p:calendar id="planningDate" value="#{massageBean.datePlanning}" pattern="dd.MM.yyyy" locale="fr" beforeShowDay="highlightDaysPlanning">
+					<p:ajax event="dateSelect" listener="#{massageBean.dateChange}" update="planningForm:planningTable" />
+				</p:calendar>
+				<p:commandButton value="#{label['planning.import']}" icon ="fa fa-fw fa-upload" update="planningForm:planningTable" action="PF('planningImportWv').show()"
+						 styleClass="printRegistrationDay" oncomplete="PF('planningImportWv').show()"/>
+			</h:form>
+			
+			<h:form id="planningForm">
+				<p:dataTable id="planningTable" var="massage"
+					value="#{massageBean.listMassages}" widgetVar="planningTableWv"
+					styleClass="planningTable"
+					emptyMessage="#{label['planning.datatable.empty']}"
+					rowKey="#{massage.id}"
+					selection="#{massageBean.selectedMassage}" selectionMode="single">
+						
+					<p:ajax event="rowSelect" update=":planningPanelGroup"
+						oncomplete="PF('planningDialogWv').show()"
+						listener="#{massageBean.initRegistration}" />
+						
+					<p:columnGroup type="header">
+						<p:row>
+							<p:column headerText="#{label['planning.date']}" />				
+							<p:column 
+								headerText="#{label['planning.time']}" />											
+							<p:column headerText="#{label['planning.isVacant']}"  />
+							<p:column headerText="#{label['planning.status']}" />
+						</p:row>
+					</p:columnGroup>	
+					
+					<p:column >
+						<h:outputText value="#{massage.date}" >
+							 <f:convertDateTime pattern="dd.MM.yyyy" />
+						</h:outputText>
+					</p:column>
+					<p:column >
+						<h:outputText value="#{massage.date}">
+							<f:convertDateTime pattern="HH:mm" timeZone="Europe/Berlin" />
+						</h:outputText>
+					</p:column>
+					<p:column >
+						<h:outputText value="#{label['planning.isVacant']}" rendered="#{massage.isVacant}"/>
+						<h:outputText value="#{label['planning.booked']}" rendered="#{!massage.isVacant}"/>
+					</p:column>
+					<p:column >					
+						<h:outputText value="#{label['common.active']}" rendered="#{massage.isActive}"/>
+						<h:outputText value="#{label['common.inactive']}" rendered="#{!massage.isActive}"/>
+					</p:column>	
+				</p:dataTable>
+			</h:form>
+			<!-- button to add a new date -->
+			<p:commandButton id="addDateBtn" value="#{label['planning.button.add']}"
+				actionListener="#{massageBean.addDate}" update=":planningPanelGroup"
+				oncomplete="PF('planningDialogWv').show();" icon="ui-icon-plusthick"
+				styleClass="addPlanningBtn" />
+				
+			<!-- planning editing form -->
+			<h:form id="planningDetailForm">
+				<p:dialog id="planningDialog" header="#{label['planning.detail']}"
+					dynamic="true" widgetVar="planningDialogWv" modal="true"
+					resizable="false" closable="false"
+					rendered="#{massageBean.selectedMassage != null}" styleClass="planningDialog">
+	
+					<p:messages id="messages" autoUpdate="true" />
+					<p:tabView id="planningFormTabView" styleClass="planningTab">
+						<!-- First tab : contains the information of the date selectionned  -->
+						<p:tab id="tabInfo" title="#{label['planning.detail.info']}">
+							<!-- access attribution panel -->
+							<p:panel id="planningInfoPanel"						
+								styleClass="planningInfoPanel floatLeft" style="border:none">
+			
+								<p:panelGrid columns="2" styleClass="planningForm"
+									style="border:none">
+									
+									<p:outputLabel value="#{label['common.dateHour']} :"
+										for="planningDateInput" />
+									<p:calendar id="planningDateInput" value="#{massageBean.selectedMassage.date}" pattern="dd.MM.yyyy HH:mm" locale="fr"/>				
+			
+									<p:outputLabel value="#{label['common.active']} :" />
+									<p:selectBooleanCheckbox id="planningIsActiveInput"
+										value="#{massageBean.selectedMassage.isActive}" />				
+			
+								</p:panelGrid>
+							</p:panel>
+						</p:tab>
+						<p:tab id="tabRegistration" title="#{label['planning.registration']}">
+							<p:panel id="planningRegistrationPanel"						
+								styleClass="planningInfoPanel floatLeft" style="border:none">
+			
+								<p:panelGrid columns="2" styleClass="planningForm"
+									style="border:none">
+									
+									<p:outputLabel value="#{label['registration.firstName']} :"
+										for="registrationFirstNameInput" />
+									<p:inputText id="registrationFirstNameInput" value="#{massageBean.registration.firstName}" />				
+			
+									<p:outputLabel value="#{label['registration.lastName']} :"
+										for="registrationLastNameInput" />
+									<p:inputText id="registrationLastNameInput" value="#{massageBean.registration.lastName}" />		
+									
+									<p:outputLabel value="#{label['registration.phoneNumber']} :"
+										for="registrationPhoneNumberInput" />
+									<p:inputText id="registrationPhoneNumberInput" value="#{massageBean.registration.phoneNumber}" />		
+									<p:outputLabel value="#{label['registration.comment']} :"
+										for="registrationCommentInput" />
+									<p:inputTextarea id="registrationCommentInput" value="#{massageBean.registration.comment}" rows="6" cols="33" />
+									<!-- <p:outputLabel value="#{label['planning.isVacant']} :"
+										for="registrationIsVacantInput" />	asdf									
+									<p:selectBooleanCheckbox id="registrationIsVacantInput"
+										value="#{massageBean.selectedMassage.isVacant}" /> -->
+									
+								</p:panelGrid>
+							</p:panel>
+						</p:tab>
+					</p:tabView>
+					
+					<f:facet name="footer">
+						<p:commandButton widgetVar="saveDateBtnWv"
+							value="#{label['common.save']}"
+							actionListener="#{massageBean.saveDate}" update=":planningPanelGroup"
+							onclick="PF('saveDateBtnWv').disable();PF('cancelDateBtnWv').disable();"
+							oncomplete="PF('saveDateBtnWv').enable();PF('cancelDateBtnWv').enable();"
+							icon="ui-icon-check" />
+						<p:commandButton widgetVar="cancelDateBtnWv"
+							value="#{label['common.cancel']}" update=":planningPanelGroup"
+							actionListener="#{massageBean.cancelDate}" 
+							process="@this"
+							onclick="PF('saveDateBtnWv').disable();PF('cancelDateBtnWv').disable();"
+							oncomplete="PF('saveDateBtnWv').enable();PF('cancelDateBtnWv').enable();PF('planningDialogWv').hide();"
+							icon="ui-icon-cancel">						
+						</p:commandButton>
+					</f:facet>
+
+				</p:dialog>
+			</h:form>	
+			<!-- planning editing form -->
+			<h:form id="planningImportForm" enctype="multipart/form-data">
+				<p:dialog id="planningImport" header="#{label['planning.import']}"
+					dynamic="true" widgetVar="planningImportWv" modal="true"
+					resizable="false" closable="false"
+					styleClass="planningDialog">
+	
+					<p:messages id="messages" autoUpdate="true" />
+				
+					<p:panel id="planningImportPanel"						
+						styleClass="planningInfoPanel floatLeft" style="border:none">
+	
+						<p:panelGrid columns="2" styleClass="planningForm"
+							style="border:none">
+							
+							<p:fileUpload id="planningFileInput" value="#{massageBean.file}" mode="simple" skinSimple="true" label="#{label['file.upload']}" />						
+	
+						</p:panelGrid>
+					</p:panel>
+						
+					
+					<f:facet name="footer">
+						<p:commandButton widgetVar="importDateBtnWv"
+							value="#{label['common.save']}"
+							ajax="false"
+							action="#{massageBean.importDate}"
+							icon="ui-icon-check" />
+						<p:commandButton widgetVar="cancelImportBtnWv"
+							value="#{label['common.cancel']}" update=":planningPanelGroup"
+							actionListener="#{massageBean.cancelImport}" 
+							process="@this"
+							onclick="PF('importDateBtnWv').disable();PF('cancelImportBtnWv').disable();"
+							oncomplete="PF('importDateBtnWv').enable();PF('cancelImportBtnWv').enable();PF('planningDialogWv').hide();"
+							icon="ui-icon-cancel">						
+						</p:commandButton>
+					</f:facet>
+
+				</p:dialog>
+			</h:form>	
+		</h:panelGroup>						
+	</ui:define>
+	
+</ui:composition>

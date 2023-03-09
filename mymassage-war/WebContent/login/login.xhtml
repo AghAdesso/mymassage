@@ -1,0 +1,35 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<ui:define name="page">
+		<f:metadata>
+			<f:event listener="#{loginBean.init}" type="preRenderView"></f:event>
+		</f:metadata>
+	<!-- Login form -->
+		<h:form id="loginForm">
+			<p:focus context="loginPanel" />
+			<h:panelGrid id="loginPanel" columns="2" cellpadding="5"
+				styleClass="centerPanel">
+				<f:facet name="header">#{label['login.title']}</f:facet>
+
+				<h:outputLabel for="username" value="#{label['login.username']}" />
+				<p:inputText id="username" value="#{loginBean.username}"
+					label="#{label['login.username']}" required="true" />
+				<h:outputLabel for="password" value="#{label['login.password']}" />
+				<p:password id="password" value="#{loginBean.password}"
+					label="#{label['login.password']}" required="true" />
+
+				<f:facet name="footer">
+					<p:commandButton id="loginButton"
+						value="#{label['login.button.connection']}"
+						action="#{loginBean.doLogin}" update=":loginForm"
+						styleClass="loginButton" />
+				</f:facet>
+			</h:panelGrid>
+		</h:form>
+	</ui:define>
+</ui:composition>

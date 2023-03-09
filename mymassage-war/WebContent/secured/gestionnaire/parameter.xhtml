@@ -1,0 +1,113 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<ui:define name="page">
+		<h1 class="leftAlign20">#{label['param.title']}</h1>
+		
+		<h:panelGroup id="parameterPanelGroup">
+			<h:form id="parameterForm">
+				<p:dataTable id="parameterTable" var="parameter"
+					value="#{parameterBean.parametersList}" widgetVar="parameterTableWv"
+					styleClass="parameterTable"
+					emptyMessage="#{label['common.datatable.empty']}"
+					rowKey="#{parameter.id}"
+					selection="#{parameterBean.selectedParameter}" selectionMode="single">
+					
+					<p:ajax event="rowSelect" update=":parameterPanelGroup"
+					oncomplete="PF('parameterDialogWv').show()" />
+							
+					<p:columnGroup type="header">
+						<p:row>
+							<p:column headerText="#{label['param.header.key']}" />											
+							<p:column headerText="#{label['param.header.value']}"  />
+							<p:column headerText="#{label['param.header.type']}"
+								escape="false" styleClass="paramType" />
+							<p:column headerText="#{label['param.header.description']}"
+								escape="false" styleClass="paramDescription" />
+						</p:row>
+					</p:columnGroup>
+					
+					<p:column >
+						<h:outputText value="#{parameter.parameterKey}" />
+					</p:column>
+					<p:column >
+						<h:outputText value="#{parameter.parameterValue}" />
+					</p:column>
+					<p:column >
+						<h:outputText value="#{parameter.parameterType}" />
+					</p:column>
+					<p:column >					
+						<h:outputText value="#{parameter.description}"/>
+					</p:column>			
+				</p:dataTable>
+			</h:form>
+			
+			<!-- parameter editing form -->
+			<h:form id="parameterDetailForm">
+				<p:dialog id="parameterDialog" header="#{label['param.detail']}"
+					dynamic="true" widgetVar="parameterDialogWv" modal="true"
+					resizable="false" closable="false"
+					rendered="#{parameterBean.selectedParameter != null}" styleClass="parameterDialog">
+	
+					<p:messages id="messages" autoUpdate="true" />
+					
+					<!-- access attribution panel -->
+					<p:panel id="parameterInfoPanel"						
+						styleClass="parameterInfoPanel floatLeft" style="border:none">
+	
+						<!-- grid containing the parameter information -->
+						<p:panelGrid columns="2" styleClass="parameterForm"
+							style="border:none">
+							
+							<p:outputLabel value="#{label['param.header.key']} :"
+								for="parameterKeyInput" />
+							<p:inputText id="parameterKeyInput"
+								value="#{parameterBean.selectedParameter.parameterKey}" readonly="true" disabled="true"/>				
+	
+							<p:outputLabel value="#{label['param.header.value']} :" 
+								for="parameterValueInput" />
+							<p:inputText id="parameterValueInput"
+								value="#{parameterBean.selectedParameter.parameterValue}" />		
+	
+							<p:outputLabel value="#{label['param.header.type']} :" 
+								for="parameterTypeInput" />
+							<p:selectOneMenu id="parameterTypeInput"
+								value="#{parameterBean.selectedParameter.parameterType}" readonly="#{parameterBean.loginBean.role == 'GES' }" disabled="#{parameterBean.loginBean.role == 'GES' }">
+								<f:selectItems value="#{parameterBean.parameterTypeList}" />
+							</p:selectOneMenu>			
+								
+							<p:outputLabel value="#{label['param.header.type']} :" 
+								for="parameterDescriptionInput" />
+							<p:inputTextarea id="parameterDescriptionInput"
+								value="#{parameterBean.selectedParameter.description}" rows="6" cols="33" />						
+	
+						</p:panelGrid>
+					</p:panel>
+					<f:facet name="footer">
+						<p:commandButton widgetVar="saveParameterBtnWv"
+							value="#{label['common.save']}"
+							actionListener="#{parameterBean.saveParameter}" update=":parameterPanelGroup"
+							onclick="PF('saveParameterBtnWv').disable();PF('cancelParameterBtnWv').disable();"
+							oncomplete="PF('saveParameterBtnWv').enable();PF('cancelParameterBtnWv').enable();"
+							icon="ui-icon-check" />
+						<p:commandButton widgetVar="cancelParameterBtnWv"
+							value="#{label['common.cancel']}" update=":parameterPanelGroup"
+							actionListener="#{parameterBean.cancelParameter}" 
+							process="@this"
+							onclick="PF('saveParameterBtnWv').disable();PF('cancelParameterBtnWv').disable();"
+							oncomplete="PF('saveParameterBtnWv').enable();PF('cancelParameterBtnWv').enable();PF('parameterDialogWv').hide();"
+							icon="ui-icon-cancel">						
+						</p:commandButton>
+					</f:facet>
+
+				</p:dialog>
+			</h:form>
+		</h:panelGroup>
+	</ui:define>
+	
+</ui:composition>

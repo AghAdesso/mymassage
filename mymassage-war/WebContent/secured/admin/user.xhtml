@@ -1,0 +1,125 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<ui:define name="page">
+		<h1 class="leftAlign20">#{label['user.title']}</h1>
+		
+		<h:panelGroup id="userPanelGroup">
+			<h:form id="userForm">
+				<p:dataTable id="userTable" var="user"
+					value="#{userBean.usersList}" widgetVar="userTableWv"
+					styleClass="userTable"
+					emptyMessage="#{label['common.datatable.empty']}"
+					filteredValue="#{userBean.filteredUsers}" rowKey="#{user.id}"
+					selection="#{userBean.selectedUser}" selectionMode="single">
+					
+					<!-- Filter field -->
+					<f:facet name="header">
+						<p:outputPanel>
+							<p:inputText id="globalFilter"
+								onkeyup="PF('userTableWv').filter()" styleClass="filter" />
+							<p:watermark for="globalFilter"
+								value="#{label['common.filter']}" />
+						</p:outputPanel>
+					</f:facet>
+					
+					<p:ajax event="rowSelect" update=":userPanelGroup"
+					oncomplete="PF('userDialogWv').show()" />
+							
+					<p:columnGroup type="header">
+						<p:row>		
+							<p:column filterBy="#{user.login}" filterMatchMode="contains"
+								filterStyle="display:none"
+								headerText="#{label['common.login']}"  />											
+							<p:column filterBy="#{user.role.description}"
+								filterMatchMode="contains" filterStyle="display:none"
+								headerText="#{label['user.header.role']}"/>
+							<p:column headerText="#{label['common.header.status']}" />
+						</p:row>
+					</p:columnGroup>
+					
+					<p:column >
+						<h:outputText value="#{user.login}" />
+					</p:column>
+					<p:column >
+						<h:outputText value="#{user.role.description}" />
+					</p:column>
+					<p:column >					
+						<h:outputText value="#{label['common.active']}" rendered="#{user.isActive}"/>
+						<h:outputText value="#{label['common.inactive']}" rendered="#{!user.isActive}"/>
+					</p:column>			
+				</p:dataTable>
+			</h:form>
+			
+			<!-- button to add a new user -->
+			<p:commandButton id="addUserBtn" value="#{label['user.button.add']}"
+				actionListener="#{userBean.addUser}" update=":userPanelGroup"
+				oncomplete="PF('userDialogWv').show();" icon="ui-icon-plusthick"
+				styleClass="addUserBtn" />
+			
+			<!-- user editing form -->
+			<h:form id="userDetailForm">
+				<p:dialog id="userDialog" header="#{label['user.detail']}"
+					dynamic="true" widgetVar="userDialogWv" modal="true"
+					resizable="false" closable="false"
+					rendered="#{userBean.selectedUser != null}" styleClass="userDialog">
+	
+					<p:messages id="messages" autoUpdate="true" />
+					
+					<!-- access attribution panel -->
+					<p:panel id="userInfoPanel"						
+						styleClass="userInfoPanel floatLeft" style="border:none">
+	
+						<!-- grid containing the user information -->
+						<p:panelGrid columns="2" styleClass="userForm"
+							style="border:none">
+							
+							<p:outputLabel value="#{label['common.login']} :"
+								for="userLoginInput" />
+							<p:inputText id="userLoginInput"
+								value="#{userBean.selectedUser.login}">
+								<f:validator validatorId="UserADValidator" />
+							</p:inputText>						
+	
+							<p:outputLabel value="#{label['common.active']} :" />
+							<p:selectBooleanCheckbox id="userIsActiveInput"
+								value="#{userBean.selectedUser.isActive}" />
+	
+							<p:outputLabel value="#{label['user.header.role']} :" />
+							<p:selectOneMenu id="userRoleInput"
+								value="#{userBean.selectedUser.role.code}">
+								<f:selectItems value="#{userBean.roles}" var="role"
+									itemValue="#{role.code}"
+									itemLabel="#{role.description}" />
+							</p:selectOneMenu>						
+	
+						</p:panelGrid>
+					</p:panel>
+					<f:facet name="footer">
+						<p:commandButton widgetVar="saveUserBtnWv"
+							value="#{label['common.save']}"
+							actionListener="#{userBean.saveUser}" update=":userPanelGroup"
+							onclick="PF('saveUserBtnWv').disable();PF('cancelUserBtnWv').disable();"
+							oncomplete="PF('saveUserBtnWv').enable();PF('cancelUserBtnWv').enable();"
+							icon="ui-icon-check" />
+						<p:commandButton widgetVar="cancelUserBtnWv"
+							value="#{label['common.cancel']}" update=":userPanelGroup"
+							actionListener="#{userBean.cancelUser}" 
+							process="@this"
+							onclick="PF('saveUserBtnWv').disable();PF('cancelUserBtnWv').disable();"
+							oncomplete="PF('saveUserBtnWv').enable();PF('cancelUserBtnWv').enable();PF('userDialogWv').hide();"
+							icon="ui-icon-cancel">						
+						</p:commandButton>
+					</f:facet>
+
+				</p:dialog>
+			</h:form>
+		</h:panelGroup>
+	</ui:define>
+	
+</ui:composition>

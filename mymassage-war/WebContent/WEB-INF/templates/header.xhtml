@@ -1,0 +1,49 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<!-- Display of the logo from the Intranet & the application logo in the background -->
+	<div id="logo">
+		<img
+			src="https://logos.loro.swiss/1-LoRo10_RVB_60x60.jpg"
+			alt="Logo" />
+	</div>
+	<h1 id="appName"><a href="/mymassage/index.xhtml">#{label['header.title']}</a></h1>
+	
+	<!-- Menu and its elements are rendered only if someone is logged in and depending on the user's role -->
+	<div id="menu" class="ui-widget">
+		<h:form>
+			<!-- Navigation menu and submenus -->
+			<p:menubar rendered="#{loginBean.isLogged}" styleClass="menubar">
+				<p:submenu label="#{label['menu.administration']}"
+					rendered="#{loginBean.role == 'GES' or loginBean.role == 'ADM'}">
+					<p:menuitem value="#{label['menu.param']}"
+						url="/secured/gestionnaire/parameter.xhtml" />
+					<p:menuitem value="#{label['menu.user']}"
+						url="/secured/admin/user.xhtml"
+						rendered="#{loginBean.role == 'ADM'}" />
+					<p:menuitem value="#{label['menu.log']}"
+						url="/secured/admin/log.xhtml"
+						rendered="#{loginBean.role == 'ADM'}" />
+				</p:submenu>
+			</p:menubar>
+		</h:form>
+	</div>
+	<h:form id="headerForm">
+		<div id="login">
+			<p:commandButton id="loginButton"
+				icon="fa fa-fw fa-user" ajax="false" action="/login/login.xhtml"
+				rendered="#{!loginBean.isLogged}" styleClass="headerLoginButton" value="#{label['header.login']}"/>
+				
+			
+		</div>
+		<div id="logout">
+			<h:outputText value="Bonjour #{loginBean.firstName}" rendered="#{loginBean.isLogged}"/>
+			<p:commandButton id="logoutButton"
+				action="#{loginBean.doLogout}" icon="fa fa-fw fa-sign-out"
+				rendered="#{loginBean.isLogged}" styleClass="logoutButton" />
+		</div>
+	</h:form>
+</ui:composition>

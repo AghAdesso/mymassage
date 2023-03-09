@@ -1,0 +1,4 @@
+<jboss-web>
+    <context-root>mymassage</context-root>
+    <virtual-host>mymassage</virtual-host>
+</jboss-web>

@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+	<f:facet name="first">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+	</f:facet>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<h:outputStylesheet library="css" name="myMassage.css" />
+	<h:outputScript library="js" name="moment.js" />
+	<script>
+		Date.prototype.yyyymmdd = function() {
+		  var mm = this.getMonth() + 1; // getMonth() is zero-based
+		  var dd = this.getDate();
+		
+		  return [this.getFullYear(),
+		          (mm>9 ? '' : '0') + mm,
+		          (dd>9 ? '' : '0') + dd
+		         ].join('');
+		};
+
+	    
+	    function highlightDays(date) {
+	        var datesAvailable = #{indexBean.highlightDateList};
+	        var datesFull = #{indexBean.highlightDateFullList};
+	        var cssclass = '';
+	        for (var i = 0; i &lt; datesAvailable.length; i++) {
+	            if (date.yyyymmdd() == new Date(datesAvailable[i]).yyyymmdd()) {
+	               cssclass = 'highlightDates';
+	            }
+	        }
+	        for (var i = 0; i &lt; datesFull.length; i++) {
+	            if (date.yyyymmdd() == new Date(datesFull[i]).yyyymmdd()) {
+	               cssclass = 'highlightFullDates';
+	            }
+	        }
+	        return [true, cssclass, ''];
+	    }
+	</script>
+	<title><ui:insert name="title">#{config['app.name']}</ui:insert></title>
+</h:head>
+<h:body>
+	<div id="page">
+		<div id="header" class="ui-widget ui-widget-header">
+			<ui:insert name="header">
+				<ui:include src="/WEB-INF/templates/header.xhtml"></ui:include>
+			</ui:insert>
+		</div>
+		<div id="content">
+			<p:messages id="messages" showDetail="true" autoUpdate="true"
+				redisplay="false" closable="true" globalOnly="true" />
+			<ui:insert name="page"></ui:insert>
+		</div>
+	</div>
+	<div id="footer" class="ui-widget ui-widget-header ui-corner-all">
+		<ui:insert name="footer">
+			<ui:include src="/WEB-INF/templates/footer.xhtml"></ui:include>
+		</ui:insert>
+	</div>
+</h:body>
+
+</html>

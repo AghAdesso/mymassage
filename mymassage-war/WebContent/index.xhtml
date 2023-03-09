@@ -1,0 +1,267 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<ui:define name="page">
+
+		<h:panelGroup id="indexPanelGroup">
+			<div class="ui-g-12 ui-md-12 ui-lg-12">
+				<h:form id="monthPlanning" rendered="#{loginBean.role == 'GES' or loginBean.role == 'ADM'}">
+					<p:commandButton value="Planning du mois" action="PF('planningMonthFormDialogWv').show()" icon ="fa fa-fw fa-print"
+							 styleClass="printRegistrationMonth" oncomplete="PF('planningMonthFormDialogWv').show()"/>
+				</h:form>
+				<h:form id="planning" rendered="#{loginBean.role == 'GES' or loginBean.role == 'ADM'}">
+					<p:commandButton icon="fa fa-fw fa-calendar" styleClass="iconRegistration" ajax="false" 
+									 action="/secured/gestionnaire/planning.xhtml"  value="#{label['index.planning']}" />
+				</h:form>
+			</div>
+			<div class="ui-g-12 ui-md-12 ui-lg-12">
+				<c:if test="#{indexBean.massageHighlighted != null}">
+					<h:form id="highlightedMassageForm">
+						<div id="highlightMassage">
+							<p:commandButton icon="fa fa-fw fa-exclamation-circle" styleClass="iconRegistration"/>
+							<h:outputText value="#{label['index.highlight.part1']}" />
+							<h:outputText value="#{indexBean.massageHighlighted.date}">
+								<f:convertDateTime pattern="dd.MM.yyyy à HH:mm " timeZone="Europe/Berlin"/>
+							</h:outputText>
+							<h:outputText value="#{label['index.highlight.part2']}" />
+							<p:commandLink id="ajax" update=":indexPanelGroup" actionListener="#{indexBean.registrate(indexBean.massageHighlighted)}">
+					      		<h:outputText value="#{label['index.isVacant']}" />
+						    </p:commandLink>	
+						</div>
+					</h:form>
+				</c:if>
+			</div>
+			<div class="ui-g-12 ui-md-12 ui-lg-12">
+				<c:if test="#{indexBean.userRegistration != null}">
+					<h:form id="cancelMassageForm">
+						<div id="infoUserNextMassage">
+							<p:commandButton icon="fa fa-fw fa-arrow-circle-o-right" styleClass="iconRegistration"/>
+							<h:outputText value="#{label['index.next.massage']} ">
+							</h:outputText>
+							<h:outputText value="#{indexBean.userRegistration.massage.date}">
+								<f:convertDateTime pattern="dd.MM.yyyy à HH:mm" timeZone="Europe/Berlin"/>
+							</h:outputText>
+						</div>
+						<div id="cancelRegistrationDiv">
+							<p:commandButton id="cancelMassage" update=":indexPanelGroup" actionListener="#{indexBean.cancelMassage}" icon="fa fa-fw fa-trash" 
+								styleClass="cancelRegistrationButton">
+							</p:commandButton>
+						</div>
+					</h:form>
+				</c:if>
+			</div>
+			<h:form id="changeDateForm">
+				<h:outputScript library="js" name="local.js"/>
+				<p:outputLabel value="#{label['index.date']} :"
+						for="planningDate" />
+				<p:calendar id="planningDate" value="#{indexBean.dateSelected}" pattern="dd.MM.yyyy" locale="fr" 
+					mindate="#{indexBean.today}" beforeShowDay="highlightDays">
+					<p:ajax event="dateSelect" listener="#{indexBean.dateChange}" update=":indexForm" />
+				</p:calendar>
+				<p:commandButton value="#{label['common.print']}" ajax="false" onclick="this.form.target='_blank'" action="#{indexBean.generateDayRegistrationPDF}" icon ="fa fa-fw fa-print"
+						 rendered="#{loginBean.role == 'GES' or loginBean.role == 'ADM' or loginBean.role == 'SEC'}" styleClass="printRegistrationDay"/>
+				 <p:commandButton value="#{label['common.send']}" ajax="false" action="#{indexBean.prepareEmail}" icon ="fa fa-fw fa-paper-plane"
+						 rendered="#{loginBean.role == 'GES' or loginBean.role == 'ADM' or loginBean.role == 'SEC'}" styleClass="printRegistrationDay"/>
+			</h:form>
+			
+			<h:form id="indexForm">
+				<p:dataTable id="indexTable" var="massage"
+					value="#{indexBean.massageList}" widgetVar="indexTableWv"
+					styleClass="indexTable"
+					emptyMessage="#{label['index.datatable.empty']}"
+					rowKey="#{massage.id}">
+					
+				
+					<p:columnGroup type="header">
+						<p:row>
+							<p:column headerText="#{label['index.header.nextDates']}"  />				
+							<p:column headerText="#{label['index.header.hour']}" />											
+							<p:column />
+						</p:row>
+					</p:columnGroup>
+				
+					
+					<p:column >
+						<h:outputText value="#{massage.date}" rendered="#{indexBean.massageList.get(0).id == massage.id}">
+							<f:convertDateTime pattern="dd.MM.yyyy" />
+						</h:outputText>
+					</p:column>
+					<p:column >
+						<h:outputText value="#{massage.date}" >
+							<f:convertDateTime pattern="HH:mm" timeZone="Europe/Berlin"/>
+						</h:outputText>
+					</p:column>
+					<p:column rendered="#{massage.isVacant}" exportable="false">					
+						<p:commandLink id="ajax" update=":indexPanelGroup" actionListener="#{indexBean.registrate(massage)}" >
+				      		<h:outputText value="#{label['index.isVacant']}" />
+					    </p:commandLink>			
+					</p:column>		
+					<p:column rendered="#{!massage.isVacant}" exportable="false">					
+						<h:outputText value="#{massage.userRegistred}"/>					
+					</p:column>	
+					
+				</p:dataTable>			
+				
+			</h:form>
+						
+			<!-- registration confirm form -->
+			<h:form id="indexDetailForm">
+				<p:dialog id="indexDialog" header="#{label['index.detail']}"
+					dynamic="true" widgetVar="indexDialogWv" modal="true"
+					resizable="false" closable="false"
+					rendered="#{indexBean.selectedMassage != null and indexBean.loginBean.isLogged == true and this.userRegistration == null}" styleClass="indexDialog">
+					
+					<!-- access attribution panel -->
+					<p:panel id="indexInfoPanel"						
+						styleClass="indexInfoPanel floatLeft" style="border:none">
+	
+						<!-- grid containing the index information -->
+						<p:panelGrid columns="2" styleClass="indexForm"
+							style="border:none">
+							
+							<p:outputLabel value="#{label['common.dateHour']} :"
+										for="indexDateInput" />
+							<p:calendar id="indexDateInput" value="#{indexBean.selectedMassage.date}" pattern="dd.MM.yyyy HH:mm" locale="fr" disabled="true"/>	
+							
+							<p:outputLabel value="#{label['registration.firstName']} :"
+										for="indexFirstNameInput" />
+							<p:inputText id="indexFirstNameInput" value="#{indexBean.registration.firstName}" disabled="true" />				
+	
+							<p:outputLabel value="#{label['registration.lastName']} :"
+								for="indexLastNameInput" />
+							<p:inputText id="indexLastNameInput" value="#{indexBean.registration.lastName}" disabled="true"/>		
+							
+							<p:outputLabel value="#{label['registration.phoneNumber']} :"
+								for="indexPhoneNumberInput" />
+							<p:inputText id="indexPhoneNumberInput" value="#{indexBean.registration.phoneNumber}" />	
+							
+							<p:outputLabel value="#{label['registration.reminder']} :"
+								for="indexReminderInput" />
+							<p:selectBooleanCheckbox id="indexReminderInput" value="#{indexBean.registration.reminder}" />					
+	
+						</p:panelGrid>
+					</p:panel>
+					<f:facet name="footer">
+						<p:commandButton widgetVar="saveIndexBtnWv"
+							value="#{label['index.save']}"
+							actionListener="#{indexBean.saveRegistration}" update=":indexPanelGroup"
+							onclick="PF('saveIndexBtnWv').disable();PF('cancelIndexBtnWv').disable();"
+							oncomplete="PF('saveIndexBtnWv').enable();PF('cancelIndexBtnWv').enable();"
+							icon="ui-icon-check" />
+						<p:commandButton widgetVar="cancelIndexBtnWv"
+							value="#{label['common.cancel']}" update=":indexPanelGroup"
+							actionListener="#{indexBean.cancelRegistration}" 
+							process="@this"
+							onclick="PF('saveIndexBtnWv').disable();PF('cancelIndexBtnWv').disable();"
+							oncomplete="PF('saveIndexBtnWv').enable();PF('cancelIndexBtnWv').enable();PF('indexDialogWv').hide();"
+							icon="ui-icon-cancel">						
+						</p:commandButton>
+					</f:facet>
+
+				</p:dialog>
+			</h:form>
+			<h:form id="commentForm">
+				<p:dialog id="indexCommentDialog" header="#{label['index.detail.comment']}"
+					dynamic="true" widgetVar="indexCommentDialogWv" modal="true"
+					resizable="false" closable="false"
+					styleClass="indexDialog">
+					<!-- access attribution panel -->
+					<p:panel id="indexCommentInfoPanel"						
+						styleClass="indexInfoPanel floatLeft" style="border:none"
+						header="#{label['index.comment.info']}">
+
+						<!-- grid containing the index information -->
+						<p:panelGrid columns="2" styleClass="indexForm"
+							style="border:none">
+							
+							<p:outputLabel value="#{label['common.dateHour']} :"
+										for="indexCommentDateInput" />
+							<p:calendar id="indexCommentDateInput" value="#{indexBean.userRegistration.massage.date}" pattern="dd.MM.yyyy HH:mm" locale="fr" disabled="true"/>	
+							
+							<p:outputLabel value="#{label['registration.firstName']} :"
+										for="indexCommentFirstNameInput" />
+							<p:inputText id="indexCommentFirstNameInput" value="#{indexBean.commentRegistration.firstName}" required="true" />				
+	
+							<p:outputLabel value="#{label['registration.lastName']} :"
+								for="indexCommentLastNameInput" />
+							<p:inputText id="indexCommentLastNameInput" value="#{indexBean.commentRegistration.lastName}" required="true"/>		
+							
+							<p:outputLabel value="#{label['registration.phoneNumber']} :"
+								for="indexCommentPhoneNumberInput" />
+							<p:inputText id="indexCommentPhoneNumberInput" value="#{indexBean.commentRegistration.phoneNumber}" required="true" />					
+	
+						</p:panelGrid>
+					</p:panel>
+					<f:facet name="footer">
+						<p:commandButton widgetVar="saveCommentBtnWv"
+							value="#{label['common.save']}"
+							actionListener="#{indexBean.saveRegistrationComment}" update=":indexPanelGroup"
+							icon="ui-icon-check" />
+						<p:commandButton widgetVar="cancelCommentBtnWv"
+							value="#{label['common.cancel']}" update=":indexPanelGroup"
+							actionListener="#{indexBean.cancelRegistrationComment}" 
+							process=":commentForm"
+							onclick="PF('saveCommentBtnWv').disable();PF('cancelCommentBtnWv').disable();"
+							oncomplete="PF('saveCommentBtnWv').enable();PF('cancelCommentBtnWv').enable();PF('indexCommentDialogWv').hide();"
+							icon="ui-icon-cancel">						
+						</p:commandButton>
+					</f:facet>
+
+				</p:dialog>
+			</h:form>
+			<h:form id="planningMonthForm">
+				<p:dialog id="planningMonthFormDialog" header="#{label['index.detail.planning']}"
+					dynamic="true" widgetVar="planningMonthFormDialogWv" modal="true"
+					resizable="false" closable="false"
+					rendered="true" styleClass="indexDialog">
+					<!-- access attribution panel -->
+					<p:panel id="planningMonthFormInfoPanel"						
+						styleClass="planningMonthFormPanel floatLeft" style="border:none" >
+
+						<!-- grid containing the index information -->
+						<p:panelGrid columns="2" styleClass="indexForm"
+							style="border:none">
+							
+							<p:outputLabel value="#{label['planning.month']} :"
+								for="planningMonthInput" />
+							<p:selectOneMenu id="planningMonthInput" value="#{indexBean.month}" required="true">
+								<f:selectItems value="#{indexBean.monthsList}" />
+							</p:selectOneMenu>	
+							
+							<p:outputLabel value="#{label['planning.year']} :"
+								for="planningMonthYearInput" />
+							<p:selectOneMenu id="planningMonthYearInput" value="#{indexBean.year}" required="true" >
+								<f:selectItems value="#{indexBean.yearList}" />
+							</p:selectOneMenu>					
+	
+						</p:panelGrid>
+					</p:panel>
+					<f:facet name="footer">
+						<p:commandButton widgetVar="savePlanningBtnWv"
+							value="#{label['common.print']}"
+							action="#{indexBean.exportPlanning}" update=":indexPanelGroup"
+							ajax="false"
+							onclick="PF('planningMonthFormDialogWv').hide();"
+							icon="ui-icon-check" />
+						<p:commandButton widgetVar="cancelPlanningBtnWv"
+							value="#{label['common.cancel']}" update=":indexPanelGroup"
+							actionListener="#{indexBean.init}" 
+							process=":commentForm"
+							onclick="PF('savePlanningBtnWv').disable();PF('cancelPlanningBtnWv').disable();"
+							oncomplete="PF('savePlanningBtnWv').enable();PF('cancelPlanningBtnWv').enable();PF('planningMonthFormDialogWv').hide();"
+							icon="ui-icon-cancel">						
+						</p:commandButton>
+					</f:facet>
+
+				</p:dialog>
+			</h:form>
+		</h:panelGroup>
+		
+	</ui:define>
+	
+</ui:composition>
