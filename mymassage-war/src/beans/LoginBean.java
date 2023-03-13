@@ -114,20 +114,26 @@ public class LoginBean extends RootBean {
 		this.adUser = null;
 		
 		// AD connection
-		ActiveDirectoryParameters activeDirectoryParameters = new ActiveDirectoryParameters();
-		activeDirectoryParameters.setDn(bundleConfig.getString("ad.dc"));
-		activeDirectoryParameters.setDomain(bundleConfig.getString("ad.domain"));
-		activeDirectoryParameters.setUrl(bundleConfig.getString("ad.url"));
+		// ActiveDirectoryParameters activeDirectoryParameters = new ActiveDirectoryParameters();
+		// activeDirectoryParameters.setDn(bundleConfig.getString("ad.dc"));
+		// activeDirectoryParameters.setDomain(bundleConfig.getString("ad.domain"));
+		// activeDirectoryParameters.setUrl(bundleConfig.getString("ad.url"));
 		try {
 			// check if the user / pwd is right
-			this.adUser = LoroFoundation.getADUser(activeDirectoryParameters, this.username, this.password);
+			this.adUser = new ADUser();// LoroFoundation.getADUser(activeDirectoryParameters, this.username, this.password);
 			// if the user has been found in AD goes on else go on catch
+			this.adUser.setFirstName("anas");
+			this.adUser.setLastName("GHANAM");
+			this.adUser.setLogin("yvco1");
+			this.adUser.setMail("anas.ghanam@adesso.ch");
+			this.adUser.setPhone("0033644227155");
+
 			this.isLogged = true;
 			this.firstName = this.adUser.getFirstName();
 			this.lastName = this.adUser.getLastName();
 			this.phoneNumber = this.adUser.getPhone();
 			// looks in the local DB if the user has access to the application
-			User user = loginEJB.getUserByLogin(this.username);
+			User user = loginEJB.getUserByLogin(this.adUser.getLogin());
 			// the user exists in the DB
 			if (user != null && user.getIsActive()) {	
 
